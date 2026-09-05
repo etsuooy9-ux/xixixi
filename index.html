@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="恋爱关系倾向测试：一个互动式心理惊悚文字游戏。" />
+    <title>恋爱关系倾向测试</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <main class="app-shell" id="app" aria-live="polite">
+      <header class="site-header">
+        <button class="brand" id="home-button" type="button" aria-label="返回首页"><span>♡</span> Morrow</button>
+        <div class="header-status"><i></i><span id="header-status">关系档案 · 私密</span></div>
+      </header>
+
+      <section class="screen intro-screen" id="intro-screen">
+        <p class="kicker">Morrow · relationship insight</p>
+        <h1>恋爱关系<br /><em>倾向测试</em></h1>
+        <p class="intro-copy">只需要几分钟，了解你在亲密关系中的真实倾向。</p>
+        <button class="primary-button" id="start-button" type="button">开始测试 <span>→</span></button>
+        <p class="fine-print">你的回答仅用于生成个人关系报告。</p>
+      </section>
+
+      <section class="screen quiz-screen hidden" id="quiz-screen">
+        <div class="progress-row"><span id="question-count">01 / 10</span><div class="progress-track"><i id="progress-bar"></i></div><span id="progress-label">10%</span></div>
+        <div class="question-meta"><span id="question-category">亲密关系</span><span id="signal">● 信号稳定</span></div>
+        <article class="question-card" id="question-card">
+          <p class="question-number" id="question-number">问题 01</p>
+          <h2 id="question-text"></h2>
+          <div class="answers" id="answers"></div>
+          <p class="whisper" id="whisper" aria-hidden="true"></p>
+        </article>
+        <button class="back-button" id="back-button" type="button">← 返回上一题</button>
+      </section>
+
+      <section class="screen interlude-screen hidden" id="interlude-screen">
+        <p class="system-text" id="system-text">正在分析……</p>
+        <div class="loader"><i></i></div>
+        <p class="glitch-message" id="glitch-message"></p>
+        <button class="quiet-button hidden" id="interlude-button" type="button">继续</button>
+      </section>
+
+      <section class="screen confrontation-screen hidden" id="confrontation-screen">
+        <p class="system-text">检测到异常回答。</p>
+        <div class="ellipsis">···</div>
+        <h2 id="confrontation-text">你刚才为什么选择那个？</h2>
+        <p id="confrontation-subtext">正在重新评估。</p>
+        <button class="primary-button" id="confrontation-button" type="button">继续 <span>→</span></button>
+      </section>
+
+      <section class="screen result-screen hidden" id="result-screen">
+        <p class="kicker" id="result-kicker">Morrow · 关系匹配报告</p>
+        <h2 id="result-title">正在生成你的结果……</h2>
+        <div class="report" id="report">
+          <div><span>依赖程度</span><b id="dependency-score">87%</b><i><em id="dependency-bar"></em></i></div>
+          <div><span>亲密需求</span><b id="closeness-score">92%</b><i><em id="closeness-bar"></em></i></div>
+          <div><span>独立倾向</span><b id="independence-score">13%</b><i><em id="independence-bar"></em></i></div>
+          <div class="control-row"><span>可控性</span><b id="control-score">正在计算……</b><i><em></em></i></div>
+        </div>
+        <div class="ending hidden" id="ending"></div>
+        <button class="quiet-button hidden" id="restart-button" type="button">重新开始测试</button>
+      </section>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
