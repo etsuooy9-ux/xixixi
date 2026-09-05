@@ -17,7 +17,7 @@
       </header>
 
       <section class="screen home-screen" id="home-screen">
-        <div class="home-hero"><p class="kicker">Morrow · relationship insight</p><h1>看见关系里<br /><em>未被说出的部分。</em></h1><p class="intro-copy">基于亲密关系心理学的自我探索工具，帮助你理解相处模式与情绪需求。</p><div class="home-actions"><button class="primary-button" id="start-button" type="button">开始关系测试 <span>→</span></button><button class="quiet-button hidden" id="resume-button" type="button">继续上次测试</button></div><p class="fine-print">约 6 分钟 · 匿名分析 · 随时可以退出</p></div>
+        <div class="home-hero"><p class="kicker">Morrow · relationship insight</p><h1>看见关系里<br /><em>未被说出的部分。</em></h1><p class="intro-copy">基于亲密关系心理学的自我探索工具，帮助你理解相处模式与情绪需求。</p><div class="name-fields"><label>我的名字<input id="my-name" maxlength="16" autocomplete="name" placeholder="例如：小雨" /></label><span>×</span><label>TA的名字<input id="ta-name" maxlength="16" placeholder="例如：阿言" /></label></div><div class="home-actions"><button class="primary-button" id="start-button" type="button">开始关系测试 <span>→</span></button><button class="quiet-button hidden" id="resume-button" type="button">继续上次测试</button></div><p class="fine-print">约 6 分钟 · 匿名分析 · 随时可以退出</p></div>
         <div class="home-panels"><article><b>关系测试</b><span>23 个问题</span><p>了解你的亲密关系倾向</p></article><article><b>历史记录</b><span id="history-status">暂无报告</span><p>你的私人分析档案</p></article><article><b>帮助中心</b><span>在线</span><p>关于 Morrow 的使用说明</p></article></div>
       </section>
       <section class="screen intro-screen hidden" id="intro-screen">
@@ -56,21 +56,21 @@
       </section>
 
       <section class="screen result-screen hidden" id="result-screen">
-        <p class="kicker" id="result-kicker">Morrow · 关系匹配报告</p>
+        <p class="kicker" id="result-kicker">Morrow · 双人关系报告</p>
         <h2 id="result-title">正在生成你的结果……</h2>
         <div class="report" id="report">
-          <div><span>依赖程度</span><b id="dependency-score">87%</b><i><em id="dependency-bar"></em></i></div>
-          <div><span>亲密需求</span><b id="closeness-score">92%</b><i><em id="closeness-bar"></em></i></div>
-          <div><span>独立倾向</span><b id="independence-score">13%</b><i><em id="independence-bar"></em></i></div>
-          <div class="control-row"><span>可控性</span><b id="control-score">正在计算……</b><i><em></em></i></div>
+          <div><span>默契度</span><b id="dependency-score">87%</b><i><em id="dependency-bar"></em></i></div>
+          <div><span>信任度</span><b id="closeness-score">92%</b><i><em id="closeness-bar"></em></i></div>
+          <div><span>依赖度</span><b id="independence-score">13%</b><i><em id="independence-bar"></em></i></div>
+          <div><span>沟通度</span><b id="communication-score">--</b><i><em id="communication-bar"></em></i></div><div><span>心动值</span><b id="heartbeat-score">--</b><i><em id="heartbeat-bar"></em></i></div><div class="control-row"><span>关系稳定度</span><b id="control-score">正在计算……</b><i><em></em></i></div>
         </div>
         <div class="ending hidden" id="ending"></div>
-        <div class="anomaly-log hidden" id="anomaly-log"><p>本次分析检测到异常数据。</p><p>检测到第二用户记录。</p><p>正在调取历史关系档案……</p></div>
-        <button class="detail-link hidden" id="detail-link" type="button">查看详细记录</button>
+        <div class="anomaly-log hidden" id="anomaly-log"><p>等等……</p><p>这个结果不是我们计算出来的。</p></div>
+        <button class="detail-link hidden" id="detail-link" type="button">查看异常记录</button>
         <button class="quiet-button hidden" id="restart-button" type="button">重新开始测试</button>
       </section>
       <section class="screen archive-screen hidden" id="archive-screen">
-        <div class="archive-card"><button class="back-button" id="archive-back" type="button">← 返回关系报告</button><p class="kicker">Morrow / internal access</p><h2>关系档案 <em>/ 内部记录</em></h2><div class="archive-meta"><span>用户编号：MR-04-██71</span><span>最后同步：2024-11-07 23:18</span><span>修改记录：3 份</span></div><label class="search-box">⌕ <input id="archive-search" type="search" placeholder="搜索档案：Morrow、04、报告、用户……" /></label><div class="search-results" id="search-results"><p>输入关键词以检索内部记录。</p></div><section class="chat-log"><div class="chat-head"><b>未归档对话 / 04</b><span>加密频道</span></div><div id="chat-messages"><p class="chat-a">A：你确定她不会发现吗？</p><p class="chat-b">B：只要她继续做测试，就不会。</p></div><button class="quiet-button" id="load-chat" type="button">加载更多</button></section></div>
+        <div class="archive-card"><button class="back-button" id="archive-back" type="button">← 返回关系报告</button><p class="kicker">Morrow / relationship record</p><h2>关系档案 <em>/ 异常记录</em></h2><div class="archive-meta" id="archive-meta"><span>测试开始：--:--</span><span>参与者：我 / TA</span><span>回答数量：23 / 23</span><span>异常回答者：1</span><span>系统状态：正常</span></div><label class="search-box">⌕ <input id="archive-search" type="search" placeholder="搜索：关系、回答、同步、TA……" /></label><div class="search-results" id="search-results"><p>输入关键词以检索本次关系记录。</p></div><section class="chat-log"><div class="chat-head"><b>回答同步记录</b><span>仅限本次测试</span></div><div id="chat-messages"><p class="chat-a">我：我已经完成了吗？</p><p class="chat-b">TA：我没有回答过。</p></div><button class="quiet-button" id="load-chat" type="button">加载更多</button></section></div>
       </section>
     </main>
     <aside class="floating-messages" id="floating-messages" aria-live="polite" aria-label="系统提示"></aside>
