@@ -63,6 +63,16 @@
         <button class="quiet-button hidden" id="restart-button" type="button">重新开始测试</button>
       </section>
     </main>
+    <aside class="floating-messages" id="floating-messages" aria-live="polite" aria-label="系统提示"></aside>
+    <section class="permission-overlay hidden" id="permission-overlay" aria-modal="true" role="dialog" aria-labelledby="permission-title">
+      <div class="permission-dialog">
+        <p class="permission-origin">morrow-relationship.test 想要</p>
+        <h2 id="permission-title">使用你的摄像头和麦克风</h2>
+        <p id="permission-copy">用于完善你的关系匹配报告。</p>
+        <p class="simulation-note">这是游戏中的模拟提示，不会访问你的设备。</p>
+        <div class="permission-actions"><button class="permission-deny" id="permission-deny" type="button">拒绝</button><button class="permission-allow" id="permission-allow" type="button">同意</button></div>
+      </div>
+    </section>
     <script src="script.js"></script>
   </body>
 </html>

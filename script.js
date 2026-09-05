@@ -28,12 +28,16 @@ const $ = (id) => document.getElementById(id);
 const screens = ['intro-screen', 'quiz-screen', 'interlude-screen', 'confrontation-screen', 'result-screen'];
 let state = JSON.parse(localStorage.getItem('morrow-game')) || { index: 0, answers: [], finished: false };
 let pendingIndex = null;
+let questionTimer = null;
+let permissionTimer = null;
+let permissionShown = false;
+const floatingLines = ['宝宝你真可爱。', '宝宝你在看我，对不对？', '别想太久。', '我知道你在哪。', '继续回答。'];
 
 function showScreen(id) { screens.forEach((screen) => $(screen).classList.toggle('hidden', screen !== id)); }
 function save() { localStorage.setItem('morrow-game', JSON.stringify(state)); }
 function scores() { return state.answers.reduce((total, answer) => { const value = questions[answer.question]?.scores[answer.option] || [0, 0, 0]; return total.map((score, index) => score + value[index]); }, [0, 0, 0]); }
 function renderQuestion() {
-  document.body.classList.remove('glitch', 'denied'); showScreen('quiz-screen');
+  document.body.classList.remove('glitch', 'denied', 'time-warning'); showScreen('quiz-screen'); clearTimeout(questionTimer);
   const question = questions[state.index]; const [warmth, suspicion] = scores(); const progress = ((state.index + 1) / questions.length) * 100;
   $('question-count').textContent = `${String(state.index + 1).padStart(2, '0')} / ${questions.length}`; $('progress-label').textContent = `${Math.round(progress)}%`; $('progress-bar').style.width = `${progress}%`;
   $('question-category').textContent = question.category; $('question-number').textContent = `问题 ${String(state.index + 1).padStart(2, '0')}`; $('question-text').textContent = question.text;
@@ -42,9 +46,18 @@ function renderQuestion() {
   const answers = $('answers'); answers.innerHTML = '';
   question.options.forEach((option, index) => { const button = document.createElement('button'); button.className = 'answer'; button.type = 'button'; button.innerHTML = `<span class="key">${String.fromCharCode(65 + index)}</span>${option}`; button.addEventListener('click', () => choose(index)); answers.append(button); });
   $('whisper').textContent = state.index >= 19 && warmth < 10 ? '请如实回答。' : '';
+  if (state.index >= 8) scheduleFloatingMessage();
+  if (state.index >= 11 && !permissionShown) { clearTimeout(permissionTimer); permissionTimer = setTimeout(showPermissionSimulation, 5200); }
+  const questionAtStart = state.index;
+  questionTimer = setTimeout(() => { if (state.index === questionAtStart && !$('quiz-screen').classList.contains('hidden')) timeWarning(); }, 30000);
 }
+function scheduleFloatingMessage() { const delay = 1800 + Math.random() * 3600; setTimeout(() => { if (!$('quiz-screen').classList.contains('hidden')) { showFloatingMessage(floatingLines[Math.floor(Math.random() * floatingLines.length)]); } }, delay); }
+function showFloatingMessage(text) { const message = document.createElement('p'); message.className = 'floating-message'; message.textContent = text; message.style.left = `${8 + Math.random() * 63}%`; message.style.top = `${16 + Math.random() * 60}%`; $('floating-messages').append(message); setTimeout(() => message.remove(), 5400); }
+function timeWarning() { document.body.classList.add('time-warning', 'glitch'); showFloatingMessage('这个问题很难回答吗？'); $('whisper').textContent = '系统仍在等待你的回答。'; setTimeout(() => document.body.classList.remove('glitch', 'time-warning'), 2200); }
+function showPermissionSimulation() { if (permissionShown || $('quiz-screen').classList.contains('hidden')) return; permissionShown = true; $('permission-overlay').classList.remove('hidden'); }
+function resolvePermissionSimulation(forced) { const overlay = $('permission-overlay'); const copy = $('permission-copy'); copy.textContent = forced ? '模拟预览已连接。你可以继续测试。' : '已完成模拟授权。你可以继续测试。'; $('permission-title').textContent = forced ? '模拟摄像头已开启' : '模拟权限已确认'; $('header-status').textContent = '关系档案 · 正在观察'; document.body.classList.add('glitch'); setTimeout(() => { overlay.classList.add('hidden'); document.body.classList.remove('glitch'); }, 1500); }
 function choose(option) {
-  const q = state.index; const value = questions[q].scores[option]; state.answers[q] = { question: q, option }; save(); pendingIndex = q + 1;
+  clearTimeout(questionTimer); const q = state.index; const value = questions[q].scores[option]; state.answers[q] = { question: q, option }; save(); pendingIndex = q + 1;
   if ((q === 20 || q === 21) && option === questions[q].options.length - 1) return rejection(q === 20 ? 'ERROR: RESPONSE REJECTED · 为什么不告诉我？' : '你刚才不是还愿意回答吗？');
   if (q === 14) return interlude('正在记录……', '抱歉，系统出现了一点小问题。');
   if (q === 18 && (option === 2 || option === 3)) return interlude('正在分析……', '……\n这个答案不太好。');
@@ -61,6 +74,8 @@ function confrontation() { showScreen('confrontation-screen'); $('confrontation-
 function results() { state.finished = true; save(); showScreen('result-screen'); $('result-title').textContent = '正在生成你的结果……'; $('report').classList.add('hidden'); $('ending').classList.add('hidden'); $('restart-button').classList.add('hidden'); setTimeout(() => { $('result-title').textContent = '匹配完成。'; $('report').classList.remove('hidden'); const [warmth, suspicion, independence] = scores(); const values = [Math.min(97, 35 + warmth * 4), Math.min(96, 46 + warmth * 3), Math.min(95, 8 + independence * 4)]; ['dependency', 'closeness', 'independence'].forEach((name, index) => { $(`${name}-score`).textContent = `${values[index]}%`; $(`${name}-bar`).style.width = `${values[index]}%`; }); setTimeout(() => finish(warmth, suspicion, independence), 1600); }, 1200); }
 function finish(warmth, suspicion, independence) { const ending = $('ending'); $('control-score').textContent = '无法计算。'; let content; if (independence >= 29 && suspicion >= 14) content = ['Ending 04 · 他正在看', '你已经回答了这么多问题。<br>现在换我问你一个。', true]; else if (independence >= 24) content = ['Ending 02 · 不合格', '因为你没有按照预期回答。<br>系统无法为你生成合适的关系。', false]; else if (suspicion >= 11) content = ['Ending 03 · 你发现了', '这从来都不是恋爱测试。<br>你是在测试他能从你的回答里得到多少。', false]; else content = ['Ending 01 · 理想的回答', '报告显示：你很适合被好好照顾。<br><br>别担心，<em>他会一直陪着你。</em>', false]; ending.innerHTML = `<h3>${content[0]}</h3><p>${content[1]}</p>`; ending.classList.remove('hidden'); if (content[2]) { ending.innerHTML += '<div class="terminal">INPUT REQUIRED_</div><input id="final-input" aria-label="回答他的问题" autocomplete="off" placeholder="输入你的回答" /><button class="quiet-button" id="final-button" type="button">回答</button>'; $('final-button').addEventListener('click', blackout); } else $('restart-button').classList.remove('hidden'); }
 function blackout() { const input = $('final-input'); if (!input.value.trim()) return input.focus(); $('ending').innerHTML = '<h3>我知道。</h3><p class="terminal">CONNECTION CLOSED</p>'; setTimeout(() => document.body.classList.add('blackout'), 1400); }
-function reset() { state = { index: 0, answers: [], finished: false }; localStorage.removeItem('morrow-game'); document.body.className = ''; renderQuestion(); }
+function reset() { clearTimeout(questionTimer); clearTimeout(permissionTimer); permissionShown = false; $('permission-overlay').classList.add('hidden'); $('floating-messages').innerHTML = ''; state = { index: 0, answers: [], finished: false }; localStorage.removeItem('morrow-game'); document.body.className = ''; renderQuestion(); }
 $('start-button').addEventListener('click', reset); $('interlude-button').addEventListener('click', advance); $('confrontation-button').addEventListener('click', () => { const text = $('confrontation-text'); if (text.textContent.includes('为什么')) { text.textContent = '我不喜欢这个答案。'; $('confrontation-subtext').textContent = '重新选择。'; } else advance(); }); $('back-button').addEventListener('click', () => { if (state.index) { state.index -= 1; state.answers.length = state.index; save(); renderQuestion(); } }); $('restart-button').addEventListener('click', reset); $('home-button').addEventListener('click', () => { if (confirm('要离开本次测试吗？')) { showScreen('intro-screen'); document.body.className = ''; } });
+$('permission-allow').addEventListener('click', () => resolvePermissionSimulation(false));
+$('permission-deny').addEventListener('click', () => { $('permission-copy').textContent = '正在重新评估你的选择……'; $('permission-deny').disabled = true; setTimeout(() => resolvePermissionSimulation(true), 1500); });
 if (state.finished) results();
