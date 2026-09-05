@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="恋爱关系倾向测试：一个互动式心理惊悚文字游戏。" />
+    <title>恋爱关系倾向测试</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="noise" aria-hidden="true"></div>
+    <main class="app-shell" id="app" aria-live="polite">
+      <header class="site-header">
+        <button class="brand" id="home-button" type="button" aria-label="返回首页"><span>♡</span> Morrow</button>
+        <nav class="platform-nav" aria-label="平台导航"><button id="nav-test" type="button">关系测试</button><button id="nav-history" type="button">历史记录</button><button id="nav-help" type="button">帮助中心</button></nav>
+        <div class="header-actions"><div class="header-status"><i></i><span id="header-status">关系档案 · 私密</span></div><button class="header-restart" id="restart-game-button" type="button">重新开始游戏</button></div>
+      </header>
+
+      <section class="screen home-screen" id="home-screen">
+        <div class="home-hero"><p class="kicker">Morrow · relationship insight</p><h1>看见关系里<br /><em>未被说出的部分。</em></h1><p class="intro-copy">基于亲密关系心理学的自我探索工具，帮助你理解相处模式与情绪需求。</p><div class="home-actions"><button class="primary-button" id="start-button" type="button">开始关系测试 <span>→</span></button><button class="quiet-button hidden" id="resume-button" type="button">继续上次测试</button></div><p class="fine-print">约 6 分钟 · 匿名分析 · 随时可以退出</p></div>
+        <div class="home-panels"><article><b>关系测试</b><span>23 个问题</span><p>了解你的亲密关系倾向</p></article><article><b>历史记录</b><span id="history-status">暂无报告</span><p>你的私人分析档案</p></article><article><b>帮助中心</b><span>在线</span><p>关于 Morrow 的使用说明</p></article></div>
+      </section>
+      <section class="screen intro-screen hidden" id="intro-screen">
+        <p class="kicker">Morrow · relationship insight</p>
+        <h1>恋爱关系<br /><em>倾向测试</em></h1>
+        <p class="intro-copy">只需要几分钟，了解你在亲密关系中的真实倾向。</p>
+        <button class="primary-button" id="start-button" type="button">开始测试 <span>→</span></button>
+        <p class="fine-print">你的回答仅用于生成个人关系报告。</p>
+      </section>
+
+      <section class="screen quiz-screen hidden" id="quiz-screen">
+        <div class="progress-row"><span id="question-count">01 / 10</span><div class="progress-track"><i id="progress-bar"></i></div><span id="progress-label">10%</span></div>
+        <div class="question-meta"><span id="question-category">亲密关系</span><span id="signal">● 信号稳定</span></div>
+        <article class="question-card" id="question-card">
+          <p class="question-number" id="question-number">问题 01</p>
+          <h2 id="question-text"></h2>
+          <div class="answers" id="answers"></div>
+          <p class="whisper" id="whisper" aria-hidden="true"></p>
+        </article>
+        <button class="back-button" id="back-button" type="button">← 返回上一题</button>
+      </section>
+
+      <section class="screen interlude-screen hidden" id="interlude-screen">
+        <p class="system-text" id="system-text">正在分析……</p>
+        <div class="loader"><i></i></div>
+        <p class="glitch-message" id="glitch-message"></p>
+        <button class="quiet-button hidden" id="interlude-button" type="button">继续</button>
+      </section>
+
+      <section class="screen confrontation-screen hidden" id="confrontation-screen">
+        <p class="system-text">检测到异常回答。</p>
+        <div class="ellipsis">···</div>
+        <h2 id="confrontation-text">你刚才为什么选择那个？</h2>
+        <p id="confrontation-subtext">正在重新评估。</p>
+        <button class="primary-button" id="confrontation-button" type="button">继续 <span>→</span></button>
+      </section>
+
+      <section class="screen result-screen hidden" id="result-screen">
+        <p class="kicker" id="result-kicker">Morrow · 关系匹配报告</p>
+        <h2 id="result-title">正在生成你的结果……</h2>
+        <div class="report" id="report">
+          <div><span>依赖程度</span><b id="dependency-score">87%</b><i><em id="dependency-bar"></em></i></div>
+          <div><span>亲密需求</span><b id="closeness-score">92%</b><i><em id="closeness-bar"></em></i></div>
+          <div><span>独立倾向</span><b id="independence-score">13%</b><i><em id="independence-bar"></em></i></div>
+          <div class="control-row"><span>可控性</span><b id="control-score">正在计算……</b><i><em></em></i></div>
+        </div>
+        <div class="ending hidden" id="ending"></div>
+        <div class="anomaly-log hidden" id="anomaly-log"><p>本次分析检测到异常数据。</p><p>检测到第二用户记录。</p><p>正在调取历史关系档案……</p></div>
+        <button class="detail-link hidden" id="detail-link" type="button">查看详细记录</button>
+        <button class="quiet-button hidden" id="restart-button" type="button">重新开始测试</button>
+      </section>
+      <section class="screen archive-screen hidden" id="archive-screen">
+        <div class="archive-card"><button class="back-button" id="archive-back" type="button">← 返回关系报告</button><p class="kicker">Morrow / internal access</p><h2>关系档案 <em>/ 内部记录</em></h2><div class="archive-meta"><span>用户编号：MR-04-██71</span><span>最后同步：2024-11-07 23:18</span><span>修改记录：3 份</span></div><label class="search-box">⌕ <input id="archive-search" type="search" placeholder="搜索档案：Morrow、04、报告、用户……" /></label><div class="search-results" id="search-results"><p>输入关键词以检索内部记录。</p></div><section class="chat-log"><div class="chat-head"><b>未归档对话 / 04</b><span>加密频道</span></div><div id="chat-messages"><p class="chat-a">A：你确定她不会发现吗？</p><p class="chat-b">B：只要她继续做测试，就不会。</p></div><button class="quiet-button" id="load-chat" type="button">加载更多</button></section></div>
+      </section>
+    </main>
+    <aside class="floating-messages" id="floating-messages" aria-live="polite" aria-label="系统提示"></aside>
+    <section class="permission-overlay hidden" id="permission-overlay" aria-modal="true" role="dialog" aria-labelledby="permission-title">
+      <div class="permission-dialog">
+        <p class="permission-origin">morrow-relationship.test 想要</p>
+        <h2 id="permission-title">使用你的摄像头和麦克风</h2>
+        <p id="permission-copy">用于完善你的关系匹配报告。</p>
+        <p class="simulation-note">这是游戏中的模拟提示，不会访问你的设备。</p>
+        <div class="permission-actions"><button class="permission-deny" id="permission-deny" type="button">拒绝</button><button class="permission-allow" id="permission-allow" type="button">同意</button></div>
+      </div>
+    </section>
+    <script src="script.js"></script>
+  </body>
+</html>
