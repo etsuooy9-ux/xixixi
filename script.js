@@ -26,7 +26,12 @@ const questions = [
 
 const $ = (id) => document.getElementById(id);
 const screens = ['intro-screen', 'quiz-screen', 'interlude-screen', 'confrontation-screen', 'result-screen'];
-let state = JSON.parse(localStorage.getItem('morrow-game')) || { index: 0, answers: [], finished: false };
+const STORAGE_KEY = 'morrow-game';
+const initialState = () => ({ index: 0, answers: [], finished: false });
+// A refresh always begins at the title screen. Clear any legacy/test state so a
+// completed run can never bypass the player's explicit "开始测试" action.
+localStorage.removeItem(STORAGE_KEY);
+let state = initialState();
 let pendingIndex = null;
 let questionTimer = null;
 let permissionTimer = null;
@@ -34,7 +39,7 @@ let permissionShown = false;
 const floatingLines = ['宝宝你真可爱。', '宝宝你在看我，对不对？', '别想太久。', '我知道你在哪。', '继续回答。'];
 
 function showScreen(id) { screens.forEach((screen) => $(screen).classList.toggle('hidden', screen !== id)); }
-function save() { localStorage.setItem('morrow-game', JSON.stringify(state)); }
+function save() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function scores() { return state.answers.reduce((total, answer) => { const value = questions[answer.question]?.scores[answer.option] || [0, 0, 0]; return total.map((score, index) => score + value[index]); }, [0, 0, 0]); }
 function renderQuestion() {
   document.body.classList.remove('glitch', 'denied', 'time-warning'); showScreen('quiz-screen'); clearTimeout(questionTimer);
@@ -74,8 +79,7 @@ function confrontation() { showScreen('confrontation-screen'); $('confrontation-
 function results() { state.finished = true; save(); showScreen('result-screen'); $('result-title').textContent = '正在生成你的结果……'; $('report').classList.add('hidden'); $('ending').classList.add('hidden'); $('restart-button').classList.add('hidden'); setTimeout(() => { $('result-title').textContent = '匹配完成。'; $('report').classList.remove('hidden'); const [warmth, suspicion, independence] = scores(); const values = [Math.min(97, 35 + warmth * 4), Math.min(96, 46 + warmth * 3), Math.min(95, 8 + independence * 4)]; ['dependency', 'closeness', 'independence'].forEach((name, index) => { $(`${name}-score`).textContent = `${values[index]}%`; $(`${name}-bar`).style.width = `${values[index]}%`; }); setTimeout(() => finish(warmth, suspicion, independence), 1600); }, 1200); }
 function finish(warmth, suspicion, independence) { const ending = $('ending'); $('control-score').textContent = '无法计算。'; let content; if (independence >= 29 && suspicion >= 14) content = ['Ending 04 · 他正在看', '你已经回答了这么多问题。<br>现在换我问你一个。', true]; else if (independence >= 24) content = ['Ending 02 · 不合格', '因为你没有按照预期回答。<br>系统无法为你生成合适的关系。', false]; else if (suspicion >= 11) content = ['Ending 03 · 你发现了', '这从来都不是恋爱测试。<br>你是在测试他能从你的回答里得到多少。', false]; else content = ['Ending 01 · 理想的回答', '报告显示：你很适合被好好照顾。<br><br>别担心，<em>他会一直陪着你。</em>', false]; ending.innerHTML = `<h3>${content[0]}</h3><p>${content[1]}</p>`; ending.classList.remove('hidden'); if (content[2]) { ending.innerHTML += '<div class="terminal">INPUT REQUIRED_</div><input id="final-input" aria-label="回答他的问题" autocomplete="off" placeholder="输入你的回答" /><button class="quiet-button" id="final-button" type="button">回答</button>'; $('final-button').addEventListener('click', blackout); } else $('restart-button').classList.remove('hidden'); }
 function blackout() { const input = $('final-input'); if (!input.value.trim()) return input.focus(); $('ending').innerHTML = '<h3>我知道。</h3><p class="terminal">CONNECTION CLOSED</p>'; setTimeout(() => document.body.classList.add('blackout'), 1400); }
-function reset() { clearTimeout(questionTimer); clearTimeout(permissionTimer); permissionShown = false; $('permission-overlay').classList.add('hidden'); $('floating-messages').innerHTML = ''; state = { index: 0, answers: [], finished: false }; localStorage.removeItem('morrow-game'); document.body.className = ''; renderQuestion(); }
-$('start-button').addEventListener('click', reset); $('interlude-button').addEventListener('click', advance); $('confrontation-button').addEventListener('click', () => { const text = $('confrontation-text'); if (text.textContent.includes('为什么')) { text.textContent = '我不喜欢这个答案。'; $('confrontation-subtext').textContent = '重新选择。'; } else advance(); }); $('back-button').addEventListener('click', () => { if (state.index) { state.index -= 1; state.answers.length = state.index; save(); renderQuestion(); } }); $('restart-button').addEventListener('click', reset); $('home-button').addEventListener('click', () => { if (confirm('要离开本次测试吗？')) { showScreen('intro-screen'); document.body.className = ''; } });
+function reset() { clearTimeout(questionTimer); clearTimeout(permissionTimer); permissionShown = false; $('permission-overlay').classList.add('hidden'); $('floating-messages').innerHTML = ''; state = initialState(); localStorage.removeItem(STORAGE_KEY); document.body.className = ''; $('header-status').textContent = '关系档案 · 私密'; renderQuestion(); }
+$('start-button').addEventListener('click', reset); $('interlude-button').addEventListener('click', advance); $('confrontation-button').addEventListener('click', () => { const text = $('confrontation-text'); if (text.textContent.includes('为什么')) { text.textContent = '我不喜欢这个答案。'; $('confrontation-subtext').textContent = '重新选择。'; } else advance(); }); $('back-button').addEventListener('click', () => { if (state.index) { state.index -= 1; state.answers.length = state.index; save(); renderQuestion(); } }); $('restart-button').addEventListener('click', reset); $('restart-game-button').addEventListener('click', reset); $('home-button').addEventListener('click', () => { if (confirm('要离开本次测试吗？')) { clearTimeout(questionTimer); clearTimeout(permissionTimer); localStorage.removeItem(STORAGE_KEY); state = initialState(); showScreen('intro-screen'); document.body.className = ''; } });
 $('permission-allow').addEventListener('click', () => resolvePermissionSimulation(false));
 $('permission-deny').addEventListener('click', () => { $('permission-copy').textContent = '正在重新评估你的选择……'; $('permission-deny').disabled = true; setTimeout(() => resolvePermissionSimulation(true), 1500); });
-if (state.finished) results();
